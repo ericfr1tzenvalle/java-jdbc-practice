@@ -61,6 +61,10 @@ public class Ideia {
         return id;
     }
     @Override
+    public String toString(){
+        return "Id: " + id + "\n - Titulo: " + titulo + "\n - Descrição: " + descricao + "\n - Urgencia: " + urgencia;
+    }
+    @Override
     public boolean equals(Object o){
         if(this == null) return false;
         if(o.getClass() != getClass() || o == null) return false;

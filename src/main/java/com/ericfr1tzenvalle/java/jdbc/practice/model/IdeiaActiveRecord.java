@@ -17,6 +17,12 @@ import java.util.List;
  *
  * @author Éric
  */
+
+/**
+ * Implementação do padrão Active Record.
+ * O próprio objeto é responsável por sua persistência.
+ */
+
 public class IdeiaActiveRecord extends Ideia {
     
     public IdeiaActiveRecord(int id, String titulo, String descricao, int urgencia) {
@@ -33,9 +39,10 @@ public class IdeiaActiveRecord extends Ideia {
      * (Poderia ser estendido para atualizar um existente se tivesse ID).
      */
      public void inserir(){
+         // SQL com placeholders (?) para prevenir SQL Injection
          String sql = "INSERT INTO ideia (titulo,descricao,urgencia) VALUES (?,?,?)";
          try(Connection conn = ConexaoFactory.getConexao();
-             PreparedStatement pstmt = conn.prepareStatement(sql)){
+             PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)){
              pstmt.setString(1,this.getTitulo());
              pstmt.setString(2, this.getDescricao());
              pstmt.setInt(3, this.getUrgencia());
@@ -79,7 +86,7 @@ public class IdeiaActiveRecord extends Ideia {
      * Método estático para buscar todas as ideias no banco de dados.
      * @return Uma lista de objetos IdeiaActiveRecord.
      */
-     public List<IdeiaActiveRecord> listar(){
+     public static List<IdeiaActiveRecord> listar(){
          List<IdeiaActiveRecord> ideias = new ArrayList<>();
          String sql = "SELECT * FROM ideia";
          try(Connection conn = ConexaoFactory.getConexao();
@@ -96,7 +103,8 @@ public class IdeiaActiveRecord extends Ideia {
              
          
      }  catch (SQLException ex) {
-            System.getLogger(IdeiaActiveRecord.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+            System.err.println("Erro ao listar ideias: " + ex.getMessage());
+            throw new RuntimeException("Falha ao buscar as ideias.", ex);
         }
          return ideias;
      }
